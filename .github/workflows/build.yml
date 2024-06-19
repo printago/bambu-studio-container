@@ -33,8 +33,10 @@ jobs:
       - name: Configure Docker to use Google Cloud credentials
         run: gcloud auth configure-docker ${{ secrets.REGISTRY_URL }}
 
-      - name: Build and push API image
+      - name: Build and push docker image
         run: |
           SHA_IMAGE=${{ secrets.IMAGE_NAME }}:${{ github.sha }}
-          docker build -t $SHA_IMAGE -f packages/api/Dockerfile packages
+          git clone --depth 1 https://github.com/bambulab/BambuStudio.git
+
+          docker build -t $SHA_IMAGE -f ./Dockerfile packages
           docker push $SHA_IMAGE
