@@ -1,0 +1,40 @@
+name: Bambu Studio Container
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+      - prod
+
+jobs:
+  build-and-upload:
+    name: Build and upload
+    runs-on: ubuntu-latest
+
+    environment: ${{ github.ref_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set GCP credentials
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+
+      - name: Configure Docker to use Google Cloud credentials
+        run: gcloud auth configure-docker ${{ secrets.REGISTRY_URL }}
+
+      - name: Build and push API image
+        run: |
+          SHA_IMAGE=${{ secrets.IMAGE_NAME }}:${{ github.sha }}
+          docker build -t $SHA_IMAGE -f packages/api/Dockerfile packages
+          docker push $SHA_IMAGE
