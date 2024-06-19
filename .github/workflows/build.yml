@@ -38,5 +38,7 @@ jobs:
           SHA_IMAGE=${{ secrets.IMAGE_NAME }}:${{ github.sha }}
           git clone --depth 1 https://github.com/bambulab/BambuStudio.git
           cd BambuStudio
+          sed -i 's/MIN_MEM_GB=10/MIN_MEM_GB=8/' BuildLinux.sh
+          sed -i 's/MIN_DISK_KB=\$((10 \* 1024 \* 1024))/MIN_DISK_KB=\$((8 \* 1024 \* 1024))/' BuildLinux.sh
           docker build -t $SHA_IMAGE -f Dockerfile .
           docker push $SHA_IMAGE
