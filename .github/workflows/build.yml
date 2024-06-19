@@ -37,6 +37,6 @@ jobs:
         run: |
           SHA_IMAGE=${{ secrets.IMAGE_NAME }}:${{ github.sha }}
           git clone --depth 1 https://github.com/bambulab/BambuStudio.git
-
-          docker build -t $SHA_IMAGE -f ./Dockerfile packages
+          cd BambuStudio
+          docker build -t $SHA_IMAGE -f Dockerfile .
           docker push $SHA_IMAGE
